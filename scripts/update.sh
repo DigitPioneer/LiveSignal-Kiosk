@@ -24,8 +24,31 @@ echo ""
 
 cd "$PROJECT_DIR"
 
+# Stash any local edits (config.yaml, slides.yaml, etc.) before pulling,
+# then re-apply them on top of the new code.
+STASHED=0
+if ! git diff --quiet; then
+    info "Saving local changes before pull..."
+    git stash
+    STASHED=1
+fi
+
 info "Pulling latest code from GitHub..."
 git pull --ff-only
+
+if [ "$STASHED" = "1" ]; then
+    info "Restoring local changes..."
+    if git stash pop; then
+        ok "Local changes restored."
+    else
+        echo ""
+        echo "  WARNING: merge conflict in config.yaml or slides.yaml."
+        echo "  Run 'git diff' to see the conflict markers, then:"
+        echo "    nano config.yaml   # fix and save"
+        echo "    git checkout -- slides.yaml  # or reset this file"
+        echo ""
+    fi
+fi
 
 info "Updating yt-dlp..."
 sudo yt-dlp -U 2>/dev/null || true
