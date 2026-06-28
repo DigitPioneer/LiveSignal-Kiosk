@@ -24,10 +24,18 @@ echo ""
 
 cd "$PROJECT_DIR"
 
+# If a previous stash pop left unresolved conflicts, stage them now so
+# git is in a clean enough state to stash again.
+UNMERGED=$(git diff --name-only --diff-filter=U 2>/dev/null || true)
+if [ -n "$UNMERGED" ]; then
+    info "Staging previously-conflicted files: $UNMERGED"
+    git add $UNMERGED
+fi
+
 # Stash any local edits (config.yaml, slides.yaml, etc.) before pulling,
 # then re-apply them on top of the new code.
 STASHED=0
-if ! git diff --quiet; then
+if ! git diff --quiet || ! git diff --cached --quiet; then
     info "Saving local changes before pull..."
     git stash
     STASHED=1
