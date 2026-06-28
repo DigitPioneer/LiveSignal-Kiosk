@@ -52,14 +52,14 @@ def start_hotspot(ssid: str, password: str) -> Optional[str]:
     """
     # Remove any stale hotspot connection first
     subprocess.run(
-        ["nmcli", "connection", "delete", HOTSPOT_CON_NAME],
+        ["sudo", "nmcli", "connection", "delete", HOTSPOT_CON_NAME],
         capture_output=True, timeout=10,
     )
 
     try:
         result = subprocess.run(
             [
-                "nmcli", "device", "wifi", "hotspot",
+                "sudo", "nmcli", "device", "wifi", "hotspot",
                 "ifname", "wlan0",
                 "ssid",   ssid,
                 "password", password,
@@ -84,11 +84,11 @@ def stop_hotspot():
     """Tear down the setup hotspot."""
     try:
         subprocess.run(
-            ["nmcli", "connection", "down", HOTSPOT_CON_NAME],
+            ["sudo", "nmcli", "connection", "down", HOTSPOT_CON_NAME],
             capture_output=True, timeout=10,
         )
         subprocess.run(
-            ["nmcli", "connection", "delete", HOTSPOT_CON_NAME],
+            ["sudo", "nmcli", "connection", "delete", HOTSPOT_CON_NAME],
             capture_output=True, timeout=10,
         )
         logger.info("Hotspot stopped.")

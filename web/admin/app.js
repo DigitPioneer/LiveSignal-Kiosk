@@ -538,6 +538,16 @@ async function restartService() {
   btn.textContent = "Restart Service";
 }
 
+async function networkReset() {
+  if (!confirm("This will forget ALL saved WiFi networks and reboot the Pi.\n\nThe TV will show the hotspot setup screen so you can connect to a new network.\n\nContinue?")) return;
+  try {
+    await api("POST", "/admin/api/system/network-reset");
+    toast("WiFi cleared — Pi is rebooting into setup mode.", "success");
+  } catch (_) {
+    toast("Rebooting into setup mode…", "success");
+  }
+}
+
 async function rebootSystem() {
   if (!confirm("Reboot the Raspberry Pi? It will be offline for about 60 seconds.")) return;
   try {
@@ -616,6 +626,7 @@ async function init() {
   document.getElementById("update-btn").addEventListener("click", updateSoftware);
   document.getElementById("restart-btn").addEventListener("click", restartService);
   document.getElementById("reboot-btn").addEventListener("click", rebootSystem);
+  document.getElementById("network-reset-btn").addEventListener("click", networkReset);
 
   // Auto-login if session exists
   if (authHeader) {

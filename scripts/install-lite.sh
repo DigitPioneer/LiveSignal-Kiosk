@@ -146,11 +146,12 @@ sudo usermod -aG netdev "$RUN_USER" 2>/dev/null || true
 # Allow passwordless sudo for specific admin actions only
 SUDOERS_FILE="/etc/sudoers.d/livesignal"
 sudo tee "$SUDOERS_FILE" > /dev/null <<EOF
-# LiveSignal Kiosk — allow admin UI to restart service and reboot
+# LiveSignal Kiosk — allow admin UI to restart service, reboot, and manage WiFi
 $RUN_USER ALL=(ALL) NOPASSWD: /bin/systemctl restart livesignal
 $RUN_USER ALL=(ALL) NOPASSWD: /bin/systemctl start livesignal
 $RUN_USER ALL=(ALL) NOPASSWD: /bin/shutdown -r now
 $RUN_USER ALL=(ALL) NOPASSWD: /sbin/shutdown -r now
+$RUN_USER ALL=(ALL) NOPASSWD: /usr/bin/nmcli
 EOF
 sudo chmod 440 "$SUDOERS_FILE"
 ok "Permissions configured."

@@ -223,6 +223,27 @@ class AdminHandler(BaseHTTPRequestHandler):
             except Exception as exc:
                 self._json({"error": str(exc)}, code=500)
 
+        elif path == "/admin/api/system/network-reset":
+            try:
+                # Delete all saved WiFi connection profiles so the Pi
+                # starts the setup hotspot on next boot
+                r = subprocess.run(
+                    ["sudo", "nmcli", "-t", "-f", "TYPE,NAME", "connection", "show"],
+                    capture_output=True, text=True, timeout=10,
+                )
+                for line in r.stdout.strip().splitlines():
+                    parts = line.split(":")
+                    if len(parts) >= 2 and parts[0].strip() == "802-11-wireless":
+                        con_name = parts[1].strip()
+                        subprocess.run(
+                            ["sudo", "nmcli", "connection", "delete", con_name],
+                            capture_output=True, timeout=10,
+                        )
+                self._json({"ok": True})
+                subprocess.Popen(["sudo", "shutdown", "-r", "now"])
+            except Exception as exc:
+                self._json({"error": str(exc)}, code=500)
+
         elif path == "/admin/api/system/reboot":
             self._json({"ok": True})
             subprocess.Popen(["sudo", "shutdown", "-r", "now"])
@@ -284,7 +305,7 @@ class AdminHandler(BaseHTTPRequestHandler):
 
     def _wifi_connect(self, ssid: str, password: str) -> dict:
         try:
-            cmd = ["nmcli", "device", "wifi", "connect", ssid]
+            cmd = ["sudo", "nmcli", "device", "wifi", "connect", ssid]
             if password:
                 cmd += ["password", password]
             r = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
@@ -304,7 +325,7 @@ class AdminHandler(BaseHTTPRequestHandler):
     def _wifi_disconnect(self) -> dict:
         try:
             r = subprocess.run(
-                ["nmcli", "device", "disconnect", "wlan0"],
+                ["sudo", "nmcli", "device", "disconnect", "wlan0"],
                 capture_output=True, text=True, timeout=10,
             )
             return {"ok": r.returncode == 0}
