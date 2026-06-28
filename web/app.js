@@ -159,8 +159,8 @@ function stopSlides() {
 }
 
 function resumeSlides() {
-  currentSlide = 0;
-  showSlide(0);
+  // Resume from the slide that was showing when the stream started
+  showSlide(currentSlide);
   slideTimer = setInterval(() => {
     currentSlide = (currentSlide + 1) % slides.length;
     showSlide(currentSlide);

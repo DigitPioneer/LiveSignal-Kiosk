@@ -67,6 +67,13 @@ CHROMIUM_FLAGS=(
     --autoplay-policy=no-user-gesture-required
     --check-for-update-interval=31536000
     --user-data-dir=/tmp/livesignal-chrome
+    # GPU / hardware video decode — reduces stream lag on Raspberry Pi
+    --use-gl=egl
+    --enable-gpu-rasterization
+    --enable-zero-copy
+    --disable-software-rasterizer
+    --enable-features=VaapiVideoDecoder
+    --ignore-gpu-blocklist
 )
 
 # ── Main loop: restart Chromium if it exits ───────────────────────────────────

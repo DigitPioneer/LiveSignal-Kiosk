@@ -72,7 +72,8 @@ if ! grep -qF "startx" "$BASH_PROFILE" 2>/dev/null; then
 
 # LiveSignal Kiosk: start X server on TTY1
 if [ -z "$DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
-    startx -- -nocursor 2>/tmp/xorg.log
+    printf '\033[2J\033[H\033[?25l'
+    exec startx -- -nocursor 2>/tmp/xorg.log
 fi
 PROFILE
 fi
@@ -131,8 +132,13 @@ sudo systemctl enable livesignal
 sudo systemctl restart livesignal
 ok "Backend service enabled and started."
 
-# ── Step 8: WiFi + admin permissions ─────────────────────────────────────────
-info "Step 8 (extra) — Granting WiFi and admin permissions..."
+# ── Step 8: Silent boot ───────────────────────────────────────────────────────
+info "Step 8/9 — Configuring silent boot (no kernel text on screen)..."
+bash "$SCRIPT_DIR/setup-silent-boot.sh"
+ok "Silent boot configured."
+
+# ── Step 9: WiFi + admin permissions ─────────────────────────────────────────
+info "Step 9 (extra) — Granting WiFi and admin permissions..."
 
 # Add user to netdev so nmcli works without sudo
 sudo usermod -aG netdev "$RUN_USER" 2>/dev/null || true
