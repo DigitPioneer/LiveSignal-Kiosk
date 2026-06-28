@@ -125,9 +125,22 @@ function showSlide(idx) {
   card.classList.add("fade-out");
 
   setTimeout(() => {
-    const slide = slides[idx] || {};
+    const slide   = slides[idx] || {};
+    const imageEl = document.getElementById("slide-image");
+
     if (titleEl) titleEl.textContent = slide.title || "";
     if (bodyEl)  bodyEl.textContent  = (slide.body || "").trimEnd();
+
+    if (imageEl) {
+      if (slide.image) {
+        imageEl.src          = "/" + slide.image.replace(/^\/+/, "");
+        imageEl.alt          = slide.title || "";
+        imageEl.style.display = "block";
+      } else {
+        imageEl.style.display = "none";
+        imageEl.src           = "";
+      }
+    }
 
     // Update dots
     document.querySelectorAll(".dot").forEach((d, i) =>

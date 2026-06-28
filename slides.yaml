@@ -1,11 +1,14 @@
 # =============================================================================
 # LiveSignal Kiosk - Announcement Slides
 #
-# Add, remove, or edit slides here. Each slide needs a "title" and "body".
-# Use \n in body text to create line breaks (or just use multiple lines
-# under the "body:" key with a pipe character as shown below).
+# Each slide can have:
+#   title  — large heading (required)
+#   body   — text below the title (optional)
+#   image  — image file from the assets/ folder (optional)
 #
-# Slides rotate automatically on the waiting screen.
+# You can mix text-only and image slides in any order.
+# Image files go in the assets/ folder.
+# Supported formats: JPG, PNG, SVG, WebP
 # =============================================================================
 
 slides:
@@ -15,14 +18,16 @@ slides:
       Join us after service for fellowship.
 
   - title: "Sunday Service"
-    body: |
-      Every Sunday at 10:00 AM
-      All are welcome.
+    body: "Every Sunday at 10:00 AM"
 
-  - title: "Youth Group"
-    body: |
-      Fridays at 7:00 PM
-      Fellowship Hall
+  # Example image slide — add an image file to assets/ and set the path here
+  # - title: "Youth Group"
+  #   body: "Fridays at 7:00 PM"
+  #   image: "assets/youth-group.jpg"
+
+  # Image-only slide (no body text)
+  # - title: "Upcoming Events"
+  #   image: "assets/events-flyer.png"
 
   - title: "Wednesday Prayer"
     body: |
