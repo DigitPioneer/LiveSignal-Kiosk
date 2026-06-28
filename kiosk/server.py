@@ -12,12 +12,14 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from typing import Optional
 from urllib.parse import urlparse
 
+import yaml
+
 from kiosk import state
 
 logger = logging.getLogger(__name__)
 
 _config = {}
-_slides = []
+_slides = []  # fallback only; slides are re-read from disk on each request
 
 
 def _project_root() -> str:
@@ -41,7 +43,14 @@ class KioskHandler(BaseHTTPRequestHandler):
             self._json(state.get())
 
         elif path == "/api/slides":
-            self._json(_slides)
+            # Read from disk every time so admin edits appear without restart
+            try:
+                slides_path = os.path.join(_project_root(), "slides.yaml")
+                with open(slides_path, "r", encoding="utf-8") as fh:
+                    doc = yaml.safe_load(fh) or {}
+                self._json(doc.get("slides", _slides))
+            except Exception:
+                self._json(_slides)
 
         elif path == "/api/config":
             d = _config.get("display", {})

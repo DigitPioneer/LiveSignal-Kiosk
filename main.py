@@ -22,7 +22,7 @@ except ImportError:
         "  # or: pip3 install pyyaml"
     )
 
-from kiosk import server, watcher
+from kiosk import admin, server, watcher
 
 logging.basicConfig(
     level=logging.INFO,
@@ -49,16 +49,17 @@ def main():
     slides_doc = load_yaml("slides.yaml")
     slides = slides_doc.get("slides", []) if isinstance(slides_doc, dict) else []
 
-    # HTTP server runs in a daemon thread so it shuts down when main exits
-    server_thread = threading.Thread(
-        target=server.run,
-        args=(config, slides),
-        daemon=True,
-        name="http-server",
-    )
-    server_thread.start()
+    # Kiosk HTTP server (localhost only — Chromium uses this)
+    threading.Thread(
+        target=server.run, args=(config, slides), daemon=True, name="kiosk-server"
+    ).start()
 
-    # Watcher runs on the main thread (blocks until process is killed)
+    # Admin HTTP server (all interfaces — accessible from the local network)
+    threading.Thread(
+        target=admin.run, args=(config,), daemon=True, name="admin-server"
+    ).start()
+
+    # YouTube watcher runs on the main thread (blocks until process is killed)
     try:
         watcher.run(config)
     except KeyboardInterrupt:

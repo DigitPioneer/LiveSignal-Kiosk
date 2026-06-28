@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LiveSignal Admin</title>
+  <link rel="stylesheet" href="/admin/static/style.css">
+</head>
+<body>
+
+  <!-- ── Login screen ──────────────────────────────────────────────────── -->
+  <div id="login-screen">
+    <div class="login-card">
+      <h1>LiveSignal</h1>
+      <p class="login-sub">Admin Panel</p>
+      <form id="login-form">
+        <label for="pin-input">PIN</label>
+        <input id="pin-input" type="password" placeholder="Enter admin PIN" autocomplete="current-password">
+        <div id="login-error" class="error-msg hidden">Incorrect PIN</div>
+        <button type="submit">Sign In</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ── Main app ───────────────────────────────────────────────────────── -->
+  <div id="app" class="hidden">
+
+    <nav id="sidebar">
+      <div class="sidebar-logo">
+        <span class="logo-icon">📡</span>
+        <span class="logo-text">LiveSignal</span>
+      </div>
+      <ul class="nav-list">
+        <li><button class="nav-btn active" data-page="status">
+          <span class="nav-icon">◉</span> Status
+        </button></li>
+        <li><button class="nav-btn" data-page="settings">
+          <span class="nav-icon">⚙</span> Settings
+        </button></li>
+        <li><button class="nav-btn" data-page="slides">
+          <span class="nav-icon">▤</span> Slides
+        </button></li>
+        <li><button class="nav-btn" data-page="wifi">
+          <span class="nav-icon">▲</span> WiFi
+        </button></li>
+        <li><button class="nav-btn" data-page="system">
+          <span class="nav-icon">⊞</span> System
+        </button></li>
+      </ul>
+      <button id="logout-btn" class="logout-btn">Sign Out</button>
+    </nav>
+
+    <main id="content">
+
+      <!-- ── Mobile nav bar ─────────────────────────────────────────────── -->
+      <div id="mobile-nav">
+        <button class="mnav-btn active" data-page="status">Status</button>
+        <button class="mnav-btn" data-page="settings">Settings</button>
+        <button class="mnav-btn" data-page="slides">Slides</button>
+        <button class="mnav-btn" data-page="wifi">WiFi</button>
+        <button class="mnav-btn" data-page="system">System</button>
+      </div>
+
+      <!-- ── Status ─────────────────────────────────────────────────────── -->
+      <section id="page-status" class="page">
+        <h2 class="page-title">Status</h2>
+        <div class="cards-grid">
+
+          <div class="card">
+            <h3>Kiosk Display</h3>
+            <div class="status-row">
+              <span class="status-dot" id="kiosk-dot"></span>
+              <span id="kiosk-label">Loading...</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Backend Service</h3>
+            <div class="status-row">
+              <span class="status-dot" id="service-dot"></span>
+              <span id="service-label">Loading...</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Network</h3>
+            <div id="network-info">Loading...</div>
+          </div>
+
+          <div class="card">
+            <h3>Kiosk Page</h3>
+            <p class="muted">View the kiosk display page in this browser.</p>
+            <a id="kiosk-link" href="#" target="_blank" class="btn btn-outline">
+              Open Kiosk Page ↗
+            </a>
+          </div>
+
+        </div>
+        <button class="btn btn-secondary" id="refresh-status-btn">Refresh Status</button>
+      </section>
+
+      <!-- ── Settings ───────────────────────────────────────────────────── -->
+      <section id="page-settings" class="page hidden">
+        <h2 class="page-title">Settings</h2>
+        <p class="page-sub">Changes take effect after restarting the backend service (System → Restart Service).</p>
+
+        <form id="settings-form">
+
+          <div class="card">
+            <h3>YouTube Channel</h3>
+            <div class="field">
+              <label>Live URL</label>
+              <input type="url" name="live_url" placeholder="https://www.youtube.com/@YourChurch/live">
+              <span class="hint">The /live URL for your YouTube channel</span>
+            </div>
+            <div class="field">
+              <label>Check Interval (seconds)</label>
+              <input type="number" name="check_interval" min="10" max="300">
+              <span class="hint">How often to poll YouTube. 60 s recommended.</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Display</h3>
+            <div class="field">
+              <label>Church Name</label>
+              <input type="text" name="church_name" placeholder="Your Church Name">
+            </div>
+            <div class="field checkbox-field">
+              <label><input type="checkbox" name="show_clock"> Show clock on waiting screen</label>
+            </div>
+            <div class="field">
+              <label>Slide Duration (seconds)</label>
+              <input type="number" name="slide_duration" min="3" max="60">
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Colors</h3>
+            <div class="color-fields">
+              <div class="field">
+                <label>Background</label>
+                <div class="color-row">
+                  <input type="color" name="background_color">
+                  <input type="text" name="background_color_hex" maxlength="7" placeholder="#0d1117">
+                </div>
+              </div>
+              <div class="field">
+                <label>Accent</label>
+                <div class="color-row">
+                  <input type="color" name="accent_color">
+                  <input type="text" name="accent_color_hex" maxlength="7" placeholder="#4a90d9">
+                </div>
+              </div>
+              <div class="field">
+                <label>Text</label>
+                <div class="color-row">
+                  <input type="color" name="text_color">
+                  <input type="text" name="text_color_hex" maxlength="7" placeholder="#ffffff">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Admin Panel</h3>
+            <div class="field">
+              <label>Admin PIN</label>
+              <input type="text" name="admin_pin" placeholder="changeme" autocomplete="new-password">
+              <span class="hint">You will need to sign in again after changing the PIN.</span>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Save Settings</button>
+          </div>
+
+        </form>
+      </section>
+
+      <!-- ── Slides ─────────────────────────────────────────────────────── -->
+      <section id="page-slides" class="page hidden">
+        <h2 class="page-title">Slides</h2>
+        <p class="page-sub">Changes are saved immediately and appear on the kiosk within 30 seconds.</p>
+
+        <div id="slides-list"></div>
+
+        <button class="btn btn-primary" id="add-slide-btn">+ Add Slide</button>
+
+        <!-- Slide editor modal -->
+        <div id="slide-modal" class="modal hidden">
+          <div class="modal-backdrop"></div>
+          <div class="modal-box">
+            <h3 id="modal-title">Edit Slide</h3>
+            <div class="field">
+              <label>Title</label>
+              <input type="text" id="slide-title-input" placeholder="Slide heading">
+            </div>
+            <div class="field">
+              <label>Body Text <span class="muted">(optional)</span></label>
+              <textarea id="slide-body-input" rows="4" placeholder="Details or leave blank for title-only"></textarea>
+            </div>
+            <div class="field">
+              <label>Image <span class="muted">(optional)</span></label>
+              <div class="image-field-row">
+                <input type="text" id="slide-image-input" placeholder="assets/photo.jpg">
+                <label class="btn btn-outline upload-label">
+                  Upload
+                  <input type="file" id="slide-image-file" accept="image/*" style="display:none">
+                </label>
+              </div>
+              <div id="slide-image-preview" class="image-preview hidden">
+                <img id="preview-img" src="" alt="preview">
+                <button type="button" id="remove-image-btn" class="remove-img-btn">✕ Remove</button>
+              </div>
+              <span class="hint">Upload an image or type a path from the assets/ folder.</span>
+            </div>
+            <div class="modal-actions">
+              <button class="btn btn-secondary" id="modal-cancel-btn">Cancel</button>
+              <button class="btn btn-primary" id="modal-save-btn">Save Slide</button>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ── WiFi ───────────────────────────────────────────────────────── -->
+      <section id="page-wifi" class="page hidden">
+        <h2 class="page-title">WiFi</h2>
+
+        <div class="card" id="wifi-status-card">
+          <h3>Current Connection</h3>
+          <div id="wifi-current">Loading...</div>
+        </div>
+
+        <div class="card">
+          <h3>Available Networks</h3>
+          <button class="btn btn-secondary" id="wifi-scan-btn">Scan for Networks</button>
+          <div id="wifi-list" class="wifi-list"></div>
+        </div>
+
+        <!-- Connect form -->
+        <div class="card" id="wifi-connect-card">
+          <h3>Connect to Network</h3>
+          <div class="field">
+            <label>Network Name (SSID)</label>
+            <input type="text" id="wifi-ssid" placeholder="Network name">
+          </div>
+          <div class="field">
+            <label>Password <span class="muted">(leave blank for open networks)</span></label>
+            <input type="password" id="wifi-password" placeholder="Password">
+          </div>
+          <div id="wifi-connect-msg" class="msg hidden"></div>
+          <button class="btn btn-primary" id="wifi-connect-btn">Connect</button>
+        </div>
+
+      </section>
+
+      <!-- ── System ─────────────────────────────────────────────────────── -->
+      <section id="page-system" class="page hidden">
+        <h2 class="page-title">System</h2>
+
+        <div class="cards-grid">
+
+          <div class="card">
+            <h3>Restart Backend</h3>
+            <p class="muted">Picks up config changes. The kiosk display stays running.</p>
+            <button class="btn btn-warning" id="restart-btn">Restart Service</button>
+          </div>
+
+          <div class="card">
+            <h3>Reboot Device</h3>
+            <p class="muted">Reboots the Raspberry Pi. Display will be offline for ~60 seconds.</p>
+            <button class="btn btn-danger" id="reboot-btn">Reboot Pi</button>
+          </div>
+
+        </div>
+
+        <div class="card">
+          <h3>Access Info</h3>
+          <p>Admin panel URL: <code id="admin-url"></code></p>
+          <p>Kiosk display URL: <code id="kiosk-url"></code></p>
+          <p class="muted" style="margin-top:0.5rem">Share the admin URL with other volunteers on the same WiFi.</p>
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Toast notification -->
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="/admin/static/app.js"></script>
+</body>
+</html>

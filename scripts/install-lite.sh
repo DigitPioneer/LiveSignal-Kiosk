@@ -131,16 +131,38 @@ sudo systemctl enable livesignal
 sudo systemctl restart livesignal
 ok "Backend service enabled and started."
 
+# ── Step 8: WiFi + admin permissions ─────────────────────────────────────────
+info "Step 8 (extra) — Granting WiFi and admin permissions..."
+
+# Add user to netdev so nmcli works without sudo
+sudo usermod -aG netdev "$RUN_USER" 2>/dev/null || true
+
+# Allow passwordless sudo for specific admin actions only
+SUDOERS_FILE="/etc/sudoers.d/livesignal"
+sudo tee "$SUDOERS_FILE" > /dev/null <<EOF
+# LiveSignal Kiosk — allow admin UI to restart service and reboot
+$RUN_USER ALL=(ALL) NOPASSWD: /bin/systemctl restart livesignal
+$RUN_USER ALL=(ALL) NOPASSWD: /bin/systemctl start livesignal
+$RUN_USER ALL=(ALL) NOPASSWD: /bin/shutdown -r now
+$RUN_USER ALL=(ALL) NOPASSWD: /sbin/shutdown -r now
+EOF
+sudo chmod 440 "$SUDOERS_FILE"
+ok "Permissions configured."
+
 echo ""
 echo "==========================================="
 echo -e "  ${GREEN}Installation complete!${NC}"
 echo "==========================================="
 echo ""
 echo "  Next steps:"
-echo "  1. Verify config.yaml has your YouTube URL"
-echo "  2. Verify slides.yaml has your announcements"
+echo "  1. Edit config.yaml — set your YouTube URL, church name, and admin PIN"
+echo "  2. Edit slides.yaml — add your announcements"
 echo "  3. sudo reboot"
 echo ""
-echo "  After reboot, check backend logs with:"
+echo "  After reboot:"
+echo "    Kiosk display: shown on TV automatically"
+echo "    Admin panel:   http://$(hostname -I | awk '{print $1}'):8081/admin"
+echo ""
+echo "  Check backend logs with:"
 echo "    journalctl -u livesignal -f"
 echo ""

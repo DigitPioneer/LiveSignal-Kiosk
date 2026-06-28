@@ -34,3 +34,10 @@ display:
 server:
   host: "127.0.0.1"
   port: 8080
+
+# ── Admin panel ───────────────────────────────────────────────────────────────
+# Accessible from any device on the same network at:
+#   http://<pi-ip-address>:8081/admin
+admin:
+  port: 8081
+  pin: "changeme"   # ← CHANGE THIS before deploying!

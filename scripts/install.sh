@@ -96,14 +96,32 @@ if [ -d "$(dirname "$LXDE_AUTOSTART")" ]; then
     ok "LXDE screensaver disabled."
 fi
 
+# ── WiFi + admin permissions ──────────────────────────────────────────────────
+info "Setting up WiFi and admin permissions..."
+sudo usermod -aG netdev "$RUN_USER" 2>/dev/null || true
+
+SUDOERS_FILE="/etc/sudoers.d/livesignal"
+sudo tee "$SUDOERS_FILE" > /dev/null <<EOF
+# LiveSignal Kiosk — allow admin UI to restart service and reboot
+$RUN_USER ALL=(ALL) NOPASSWD: /bin/systemctl restart livesignal
+$RUN_USER ALL=(ALL) NOPASSWD: /bin/systemctl start livesignal
+$RUN_USER ALL=(ALL) NOPASSWD: /bin/shutdown -r now
+$RUN_USER ALL=(ALL) NOPASSWD: /sbin/shutdown -r now
+EOF
+sudo chmod 440 "$SUDOERS_FILE"
+ok "Permissions configured."
+
 echo ""
 echo "==========================================="
 echo -e "  ${GREEN}Installation complete!${NC}"
 echo "==========================================="
 echo ""
 echo "  Next steps:"
-echo "  1. Edit config.yaml  — set your YouTube channel URL and church name"
-echo "  2. Edit slides.yaml  — add your announcement slides"
+echo "  1. Edit config.yaml — set your YouTube URL, church name, and admin PIN"
+echo "  2. Edit slides.yaml — add your announcement slides"
 echo "  3. Replace assets/logo.svg with your church logo (PNG or SVG)"
 echo "  4. Reboot: sudo reboot"
+echo ""
+echo "  After reboot:"
+echo "    Admin panel: http://$(hostname -I | awk '{print $1}'):8081/admin"
 echo ""
