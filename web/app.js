@@ -115,26 +115,41 @@ function buildDots() {
 }
 
 function showSlide(idx) {
-  const card    = document.getElementById("slide-card");
-  const titleEl = document.getElementById("slide-title");
-  const bodyEl  = document.getElementById("slide-body");
+  const card     = document.getElementById("slide-card");
+  const titleEl  = document.getElementById("slide-title");
+  const bodyEl   = document.getElementById("slide-body");
+  const waitView = document.getElementById("waiting-view");
 
   if (!card) return;
 
-  // Fade out → swap content → fade in
   card.classList.add("fade-out");
 
   setTimeout(() => {
-    const slide   = slides[idx] || {};
-    const imageEl = document.getElementById("slide-image");
+    const slide    = slides[idx] || {};
+    const imageEl  = document.getElementById("slide-image");
+    const isFullscreen = slide.fullscreen === true;
 
-    if (titleEl) titleEl.textContent = slide.title || "";
-    if (bodyEl)  bodyEl.textContent  = (slide.body || "").trimEnd();
+    // Fullscreen mode: hide header, clock, dots; image fills screen
+    waitView.classList.toggle("slide-fullscreen", isFullscreen);
+
+    // Title — hide when empty or fullscreen
+    if (titleEl) {
+      const hasTitle = !isFullscreen && slide.title;
+      titleEl.textContent   = hasTitle ? slide.title : "";
+      titleEl.style.display = hasTitle ? "" : "none";
+    }
+
+    // Body — hide when empty or fullscreen
+    if (bodyEl) {
+      const hasBody = !isFullscreen && slide.body;
+      bodyEl.textContent   = hasBody ? slide.body.trimEnd() : "";
+      bodyEl.style.display = hasBody ? "" : "none";
+    }
 
     if (imageEl) {
       if (slide.image) {
-        imageEl.src          = "/" + slide.image.replace(/^\/+/, "");
-        imageEl.alt          = slide.title || "";
+        imageEl.src           = "/" + slide.image.replace(/^\/+/, "");
+        imageEl.alt           = slide.title || "";
         imageEl.style.display = "block";
       } else {
         imageEl.style.display = "none";
@@ -142,7 +157,6 @@ function showSlide(idx) {
       }
     }
 
-    // Update dots
     document.querySelectorAll(".dot").forEach((d, i) =>
       d.classList.toggle("active", i === idx)
     );

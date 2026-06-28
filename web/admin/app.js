@@ -227,7 +227,7 @@ function renderSlides() {
     <div class="slide-item">
       <span class="slide-num">#${i + 1}</span>
       <div class="slide-preview">
-        <div class="slide-preview-title">${esc(slide.title || "(no title)")}</div>
+        <div class="slide-preview-title">${slide.fullscreen ? "⛶ Full Screen Image" : esc(slide.title || "(no title)")}</div>
         ${slide.body  ? `<div class="slide-preview-body">${esc(firstLine(slide.body))}</div>` : ""}
         ${slide.image ? `<div class="slide-has-img">📷 ${esc(slide.image)}</div>` : ""}
       </div>
@@ -262,6 +262,10 @@ function openSlideModal(idx) {
   document.getElementById("slide-body-input").value  = slide.body  || "";
   document.getElementById("slide-image-input").value = slide.image || "";
 
+  const fsCheck = document.getElementById("slide-fullscreen-input");
+  fsCheck.checked = slide.fullscreen === true;
+  document.getElementById("slide-text-fields").style.display = fsCheck.checked ? "none" : "";
+
   const preview = document.getElementById("slide-image-preview");
   const img     = document.getElementById("preview-img");
   if (slide.image) {
@@ -273,7 +277,7 @@ function openSlideModal(idx) {
   }
 
   document.getElementById("slide-modal").classList.remove("hidden");
-  document.getElementById("slide-title-input").focus();
+  if (!fsCheck.checked) document.getElementById("slide-title-input").focus();
 }
 
 function closeSlideModal() {
@@ -282,14 +286,18 @@ function closeSlideModal() {
 }
 
 async function saveSlideModal() {
+  const fullscreen = document.getElementById("slide-fullscreen-input").checked;
   const slide = {
-    title: document.getElementById("slide-title-input").value.trim(),
-    body:  document.getElementById("slide-body-input").value.trimEnd() || undefined,
-    image: document.getElementById("slide-image-input").value.trim()   || undefined,
+    title:      fullscreen ? undefined : (document.getElementById("slide-title-input").value.trim() || undefined),
+    body:       fullscreen ? undefined : (document.getElementById("slide-body-input").value.trimEnd() || undefined),
+    image:      document.getElementById("slide-image-input").value.trim() || undefined,
+    fullscreen: fullscreen || undefined,
   };
-  if (!slide.title) { toast("Title is required", "error"); return; }
-  if (!slide.body)  delete slide.body;
-  if (!slide.image) delete slide.image;
+  if (!fullscreen && !slide.title) { toast("Title is required for non-fullscreen slides", "error"); return; }
+  if (!slide.title)     delete slide.title;
+  if (!slide.body)      delete slide.body;
+  if (!slide.image)     delete slide.image;
+  if (!slide.fullscreen) delete slide.fullscreen;
 
   if (_editIdx === null) {
     _slides.push(slide);
@@ -538,6 +546,9 @@ async function init() {
   document.getElementById("modal-cancel-btn").addEventListener("click", closeSlideModal);
   document.getElementById("modal-save-btn").addEventListener("click", saveSlideModal);
   document.querySelector(".modal-backdrop").addEventListener("click", closeSlideModal);
+  document.getElementById("slide-fullscreen-input").addEventListener("change", (e) => {
+    document.getElementById("slide-text-fields").style.display = e.target.checked ? "none" : "";
+  });
 
   document.getElementById("slide-image-file").addEventListener("change", (e) => {
     handleImageUpload(e.target.files[0]);

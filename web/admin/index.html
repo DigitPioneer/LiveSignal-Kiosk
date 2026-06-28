@@ -190,12 +190,20 @@
           <div class="modal-box">
             <h3 id="modal-title">Edit Slide</h3>
             <div class="field">
+              <label class="toggle-label">
+                <input type="checkbox" id="slide-fullscreen-input">
+                <span>Full Screen Image <span class="muted">(hides title, body, clock, and logo on TV)</span></span>
+              </label>
+            </div>
+            <div id="slide-text-fields">
+            <div class="field">
               <label>Title</label>
               <input type="text" id="slide-title-input" placeholder="Slide heading">
             </div>
             <div class="field">
               <label>Body Text <span class="muted">(optional)</span></label>
               <textarea id="slide-body-input" rows="4" placeholder="Details or leave blank for title-only"></textarea>
+            </div>
             </div>
             <div class="field">
               <label>Image <span class="muted">(optional)</span></label>
