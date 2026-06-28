@@ -18,17 +18,18 @@ DEFAULT_HOTSPOT_IP = "10.42.0.1"
 
 
 def has_active_connection(retries: int = 1) -> bool:
-    """Return True if NetworkManager reports full (non-local-only) connectivity."""
+    """Return True if a WiFi or Ethernet device is actually connected."""
     for _ in range(retries):
         try:
             r = subprocess.run(
-                ["nmcli", "-t", "-f", "STATE", "general"],
+                ["nmcli", "-t", "-f", "TYPE,STATE", "device"],
                 capture_output=True, text=True, timeout=5,
             )
-            output = r.stdout.lower().strip()
-            # "connected (local only)" means no real network — loopback only
-            if "connected" in output and "local only" not in output:
-                return True
+            for line in r.stdout.strip().splitlines():
+                parts = line.split(":")
+                if len(parts) >= 2 and parts[0].strip() in ("wifi", "ethernet"):
+                    if parts[1].strip() == "connected":
+                        return True
         except Exception:
             pass
         time.sleep(1)
