@@ -561,6 +561,25 @@ code {
 .toast.success { background: #276749; }
 .toast.error   { background: #9b2c2c; }
 
+/* ── Footer ──────────────────────────────────────────────── */
+.admin-footer {
+  margin-left: 220px;
+  padding: 0.9rem 2rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+.admin-footer a {
+  color: var(--accent);
+  text-decoration: none;
+}
+.admin-footer a:hover { text-decoration: underline; }
+.footer-sep { opacity: 0.4; }
+
 /* ── Responsive ──────────────────────────────────────────── */
 @media (max-width: 700px) {
   #sidebar { display: none; }
@@ -568,4 +587,5 @@ code {
   #content { margin-left: 0; padding: 1rem; }
   .cards-grid { grid-template-columns: 1fr; }
   .color-fields { grid-template-columns: 1fr; }
+  .admin-footer { margin-left: 0; }
 }
