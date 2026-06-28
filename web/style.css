@@ -177,3 +177,101 @@ html, body {
 .dot.active {
   background: var(--accent);
 }
+
+/* ── Setup / First-Boot View ─────────────────────────────── */
+#setup-view {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(160deg, #0d1117 0%, #0a1628 100%);
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+.setup-card {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 1.6rem;
+  padding: clamp(2.5rem, 5vw, 6rem) clamp(3rem, 7vw, 8rem);
+  text-align: center;
+  max-width: min(920px, 82vw);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.6rem;
+}
+
+.setup-icon {
+  font-size: clamp(3rem, 6vw, 5.5rem);
+  line-height: 1;
+}
+
+.setup-heading {
+  font-size: clamp(2rem, 3.8vw, 3.8rem);
+  font-weight: 600;
+  color: #4a90d9;
+  line-height: 1.2;
+}
+
+.setup-sub {
+  font-size: clamp(1.1rem, 2vw, 2rem);
+  font-weight: 300;
+  opacity: 0.8;
+  line-height: 1.5;
+}
+
+.setup-cred-block {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(74, 144, 217, 0.35);
+  border-radius: 0.9rem;
+  padding: 1.4rem 2.4rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.setup-cred-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.setup-label {
+  font-size: clamp(1rem, 1.8vw, 1.7rem);
+  opacity: 0.6;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+}
+
+.setup-value {
+  font-size: clamp(1.3rem, 2.4vw, 2.4rem);
+  font-weight: 700;
+  font-family: 'Courier New', Courier, monospace;
+  color: #ffffff;
+  letter-spacing: 0.05em;
+  word-break: break-all;
+}
+
+.setup-url {
+  font-size: clamp(1.4rem, 2.6vw, 2.6rem);
+  font-weight: 700;
+  font-family: 'Courier New', Courier, monospace;
+  color: #4a90d9;
+  background: rgba(74, 144, 217, 0.1);
+  border: 1px solid rgba(74, 144, 217, 0.3);
+  border-radius: 0.6rem;
+  padding: 0.7rem 1.4rem;
+  letter-spacing: 0.04em;
+  word-break: break-all;
+}
+
+.setup-hint {
+  font-size: clamp(0.9rem, 1.5vw, 1.5rem);
+  opacity: 0.45;
+  line-height: 1.5;
+}

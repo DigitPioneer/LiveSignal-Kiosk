@@ -21,7 +21,7 @@ from urllib.parse import urlparse
 
 import yaml
 
-from kiosk import state
+from kiosk import network, state
 
 logger = logging.getLogger(__name__)
 
@@ -270,6 +270,10 @@ class AdminHandler(BaseHTTPRequestHandler):
                 cmd += ["password", password]
             r = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
             if r.returncode == 0:
+                # If we were in setup/hotspot mode, tear it down and resume normal operation
+                if state.get().get("status") == "setup":
+                    network.stop_hotspot()
+                    state.set_waiting()
                 return {"ok": True, "message": f"Connected to {ssid}"}
             msg = r.stderr.strip() or r.stdout.strip() or "Connection failed"
             return {"ok": False, "message": msg}

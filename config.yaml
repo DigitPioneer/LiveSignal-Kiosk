@@ -41,3 +41,11 @@ server:
 admin:
   port: 8081
   pin: "changeme"   # ← CHANGE THIS before deploying!
+
+# ── First-boot setup hotspot ──────────────────────────────────────────────────
+# If the Pi boots with no WiFi configured, it creates a temporary WiFi hotspot
+# so a volunteer can open the admin panel and connect to the church network.
+# The TV will display these credentials and the admin URL automatically.
+setup:
+  hotspot_ssid: "LiveSignal-Setup"
+  hotspot_password: "livesignal"

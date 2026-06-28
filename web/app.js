@@ -172,7 +172,10 @@ function resumeSlides() {
 async function pollState() {
   const state = await fetchJSON("/api/state", { status: "waiting" });
 
-  if (state.status === "live" && kioskStatus !== "live") {
+  if (state.status === "setup" && kioskStatus !== "setup") {
+    goSetup(state.setup || {});
+    kioskStatus = "setup";
+  } else if (state.status === "live" && kioskStatus !== "live") {
     goLive(state.video_id);
     kioskStatus = "live";
   } else if (state.status === "waiting" && kioskStatus !== "waiting") {
@@ -198,15 +201,40 @@ function goLive(videoId) {
 }
 
 function goWaiting() {
-  const iframe   = document.getElementById("live-iframe");
-  const liveView = document.getElementById("live-view");
-  const waitView = document.getElementById("waiting-view");
+  const iframe     = document.getElementById("live-iframe");
+  const liveView   = document.getElementById("live-view");
+  const waitView   = document.getElementById("waiting-view");
+  const setupView  = document.getElementById("setup-view");
 
   if (iframe) iframe.src = "";   // stop the video
 
   liveView.classList.add("hidden");
+  setupView.classList.add("hidden");
   waitView.classList.remove("hidden");
   resumeSlides();
+}
+
+function goSetup(info) {
+  const liveView  = document.getElementById("live-view");
+  const waitView  = document.getElementById("waiting-view");
+  const setupView = document.getElementById("setup-view");
+
+  stopSlides();
+  liveView.classList.add("hidden");
+  waitView.classList.add("hidden");
+  setupView.classList.remove("hidden");
+
+  const ssid = info.ssid || "LiveSignal-Setup";
+  const pass = info.password || "livesignal";
+  const ip   = info.ip || "10.42.0.1";
+
+  const ssidEl = document.getElementById("setup-ssid");
+  const passEl = document.getElementById("setup-password");
+  const urlEl  = document.getElementById("setup-url");
+
+  if (ssidEl) ssidEl.textContent = ssid;
+  if (passEl) passEl.textContent = pass;
+  if (urlEl)  urlEl.textContent  = `http://${ip}:8081/admin`;
 }
 
 // ── Utility ───────────────────────────────────────────────────────────────────

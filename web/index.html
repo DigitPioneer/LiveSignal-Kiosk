@@ -51,6 +51,31 @@
 
   </div>
 
+  <!-- ── First-Boot Setup View ─────────────────────────────────────────── -->
+  <div id="setup-view" class="hidden">
+    <div class="setup-card">
+      <div class="setup-icon">&#x1F4F6;</div>
+      <h1 class="setup-heading">WiFi Setup Required</h1>
+      <p class="setup-sub">Connect your phone or tablet to this WiFi network:</p>
+
+      <div class="setup-cred-block">
+        <div class="setup-cred-row">
+          <span class="setup-label">Network</span>
+          <span class="setup-value" id="setup-ssid">LiveSignal-Setup</span>
+        </div>
+        <div class="setup-cred-row">
+          <span class="setup-label">Password</span>
+          <span class="setup-value" id="setup-password">livesignal</span>
+        </div>
+      </div>
+
+      <p class="setup-sub">Then open this address in your browser:</p>
+      <div class="setup-url" id="setup-url">http://10.42.0.1:8081/admin</div>
+
+      <p class="setup-hint">Once WiFi is configured this screen will disappear automatically.</p>
+    </div>
+  </div>
+
   <script src="/app.js"></script>
 </body>
 </html>
