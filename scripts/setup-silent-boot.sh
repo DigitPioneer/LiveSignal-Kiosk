@@ -40,6 +40,20 @@ info "Updating $CMDLINE ..."
 current="$(cat "$CMDLINE")"
 updated="$current"
 
+# Remove console=tty3 if we previously added it (it broke display output)
+if echo "$updated" | grep -qw "console=tty3"; then
+    updated="$(echo "$updated" | sed 's/ *console=tty3//g')"
+    echo "  - removed console=tty3 (was breaking display)"
+fi
+
+# Remove console=tty1 so the kernel sends NO text to the TV screen.
+# The agetty autologin service still runs on tty1 — removing this only
+# stops the kernel/systemd text from printing there.
+if echo "$updated" | grep -qw "console=tty1"; then
+    updated="$(echo "$updated" | sed 's/ *console=tty1//g')"
+    echo "  - removed console=tty1 (kernel text will no longer print to TV)"
+fi
+
 add_param() {
     local param="$1"
     if ! echo "$updated" | grep -qw "$param"; then
@@ -50,14 +64,11 @@ add_param() {
     fi
 }
 
-# console=tty3              — redirect ALL kernel+systemd text to TTY3;
-#                             TTY1 (the TV) stays completely black
-# quiet                     — suppress most kernel log output
-# loglevel=0                — no kernel messages at all
-# logo.nologo               — hide the kernel Tux penguin logo
+# quiet                      — suppress most kernel log output
+# loglevel=0                 — no kernel messages at all
+# logo.nologo                — hide the kernel Tux penguin logo
 # vt.global_cursor_default=0 — hide blinking cursor on TTY
-# systemd.show_status=false  — suppress the "[ OK ] Started ..." service lines
-add_param "console=tty3"
+# systemd.show_status=false  — suppress "[ OK ] Started ..." service lines
 add_param "quiet"
 add_param "loglevel=0"
 add_param "logo.nologo"
