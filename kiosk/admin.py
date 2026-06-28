@@ -223,6 +223,46 @@ class AdminHandler(BaseHTTPRequestHandler):
             except Exception as exc:
                 self._json({"error": str(exc)}, code=500)
 
+        elif path == "/admin/api/system/factory-reset":
+            try:
+                root = _project_root()
+
+                # 1. Restore config.yaml and slides.yaml to the repo defaults
+                subprocess.run(
+                    ["git", "checkout", "HEAD", "--", "config.yaml", "slides.yaml"],
+                    cwd=root, capture_output=True, timeout=15,
+                )
+
+                # 2. Clear all uploaded assets
+                assets_dir = os.path.join(root, "assets")
+                if os.path.isdir(assets_dir):
+                    for fname in os.listdir(assets_dir):
+                        fp = os.path.join(assets_dir, fname)
+                        if os.path.isfile(fp):
+                            try:
+                                os.remove(fp)
+                            except Exception:
+                                pass
+
+                # 3. Delete all saved WiFi connection profiles
+                r = subprocess.run(
+                    ["sudo", "nmcli", "-t", "-f", "TYPE,NAME", "connection", "show"],
+                    capture_output=True, text=True, timeout=10,
+                )
+                for line in r.stdout.strip().splitlines():
+                    parts = line.split(":")
+                    if len(parts) >= 2 and parts[0].strip() == "802-11-wireless":
+                        subprocess.run(
+                            ["sudo", "nmcli", "connection", "delete", parts[1].strip()],
+                            capture_output=True, timeout=10,
+                        )
+
+                # 4. Reboot — Pi will detect no network and start hotspot
+                self._json({"ok": True})
+                subprocess.Popen(["sudo", "shutdown", "-r", "now"])
+            except Exception as exc:
+                self._json({"error": str(exc)}, code=500)
+
         elif path == "/admin/api/system/network-reset":
             try:
                 # Delete all saved WiFi connection profiles so the Pi

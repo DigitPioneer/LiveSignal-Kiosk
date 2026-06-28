@@ -208,6 +208,14 @@ body {
   color: var(--text);
 }
 
+.card.card-danger {
+  border: 1px solid #fed7d7;
+  background: #fff5f5;
+}
+.card.card-danger h3 {
+  color: #c53030;
+}
+
 .cards-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));

@@ -539,12 +539,25 @@ async function restartService() {
 }
 
 async function networkReset() {
-  if (!confirm("This will forget ALL saved WiFi networks and reboot the Pi.\n\nThe TV will show the hotspot setup screen so you can connect to a new network.\n\nContinue?")) return;
+  if (!confirm("This will forget ALL saved WiFi networks and reboot the Pi.\n\nConfig and slides are kept. The TV will show the hotspot setup screen.\n\nContinue?")) return;
   try {
     await api("POST", "/admin/api/system/network-reset");
     toast("WiFi cleared — Pi is rebooting into setup mode.", "success");
   } catch (_) {
     toast("Rebooting into setup mode…", "success");
+  }
+}
+
+async function factoryReset() {
+  const first = confirm("FACTORY RESET\n\nThis will permanently delete:\n• All config (church name, PIN, YouTube URL)\n• All slides\n• All uploaded images\n• All saved WiFi networks\n\nThe device will reboot into first-time setup.\n\nAre you sure?");
+  if (!first) return;
+  const second = confirm("This cannot be undone. Type OK to confirm.");
+  if (!second) return;
+  try {
+    await api("POST", "/admin/api/system/factory-reset");
+    toast("Factory reset started — Pi is rebooting.", "success");
+  } catch (_) {
+    toast("Rebooting…", "success");
   }
 }
 
@@ -627,6 +640,7 @@ async function init() {
   document.getElementById("restart-btn").addEventListener("click", restartService);
   document.getElementById("reboot-btn").addEventListener("click", rebootSystem);
   document.getElementById("network-reset-btn").addEventListener("click", networkReset);
+  document.getElementById("factory-reset-btn").addEventListener("click", factoryReset);
 
   // Auto-login if session exists
   if (authHeader) {
