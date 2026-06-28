@@ -472,6 +472,38 @@ async function loadSystemInfo() {
   } catch (_) {}
 }
 
+async function updateSoftware() {
+  if (!confirm("Pull the latest updates from GitHub and restart the service?\n\nThis takes about 30 seconds.")) return;
+  const btn = document.getElementById("update-btn");
+  btn.disabled = true;
+  btn.textContent = "Updating…";
+
+  try {
+    await api("POST", "/admin/api/system/update");
+  } catch (_) {
+    // Connection drop is expected — update.sh restarts the service at the end
+  }
+
+  btn.textContent = "Waiting for restart…";
+  for (let i = 0; i < 60; i++) {
+    await new Promise(r => setTimeout(r, 1000));
+    try {
+      const res = await fetch("/admin/api/status");
+      if (res.ok) {
+        toast("Update complete!", "success");
+        await loadStatus();
+        btn.disabled = false;
+        btn.textContent = "Update Now";
+        return;
+      }
+    } catch (_) { /* still coming back up */ }
+  }
+
+  toast("Update timed out — check the Pi via SSH.", "error");
+  btn.disabled = false;
+  btn.textContent = "Update Now";
+}
+
 async function restartService() {
   if (!confirm("Restart the backend service? The kiosk display stays running but may briefly show stale state.")) return;
   const btn = document.getElementById("restart-btn");
@@ -581,6 +613,7 @@ async function init() {
   document.getElementById("wifi-connect-btn").addEventListener("click", connectWifi);
 
   // System
+  document.getElementById("update-btn").addEventListener("click", updateSoftware);
   document.getElementById("restart-btn").addEventListener("click", restartService);
   document.getElementById("reboot-btn").addEventListener("click", rebootSystem);
 

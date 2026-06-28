@@ -207,6 +207,22 @@ class AdminHandler(BaseHTTPRequestHandler):
             except Exception as exc:
                 self._json({"error": str(exc)}, code=500)
 
+        elif path == "/admin/api/system/update":
+            try:
+                script = os.path.join(_project_root(), "scripts", "update.sh")
+                # start_new_session detaches the process so it survives the
+                # service restart that update.sh triggers at the end
+                subprocess.Popen(
+                    ["bash", script],
+                    cwd=_project_root(),
+                    start_new_session=True,
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                )
+                self._json({"ok": True})
+            except Exception as exc:
+                self._json({"error": str(exc)}, code=500)
+
         elif path == "/admin/api/system/reboot":
             self._json({"ok": True})
             subprocess.Popen(["sudo", "shutdown", "-r", "now"])
