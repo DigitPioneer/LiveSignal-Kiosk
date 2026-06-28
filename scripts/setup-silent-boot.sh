@@ -50,14 +50,19 @@ add_param() {
     fi
 }
 
-# quiet          — suppress most kernel log output
-# loglevel=1     — only show critical errors
-# logo.nologo    — hide the kernel Tux penguin logo
-# vt.global_cursor_default=0  — hide blinking cursor on TTY
+# console=tty3              — redirect ALL kernel+systemd text to TTY3;
+#                             TTY1 (the TV) stays completely black
+# quiet                     — suppress most kernel log output
+# loglevel=0                — no kernel messages at all
+# logo.nologo               — hide the kernel Tux penguin logo
+# vt.global_cursor_default=0 — hide blinking cursor on TTY
+# systemd.show_status=false  — suppress the "[ OK ] Started ..." service lines
+add_param "console=tty3"
 add_param "quiet"
-add_param "loglevel=1"
+add_param "loglevel=0"
 add_param "logo.nologo"
 add_param "vt.global_cursor_default=0"
+add_param "systemd.show_status=false"
 
 if [ "$updated" != "$current" ]; then
     # Write back as a single line (cmdline.txt must be one line)
