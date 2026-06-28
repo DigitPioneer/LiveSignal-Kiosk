@@ -466,15 +466,33 @@ async function restartService() {
   const btn = document.getElementById("restart-btn");
   btn.disabled = true;
   btn.textContent = "Restarting…";
+
   try {
     await api("POST", "/admin/api/system/restart");
-    toast("Service restarted.", "success");
-  } catch (err) {
-    toast("Restart failed: " + err.message, "error");
-  } finally {
-    btn.disabled = false;
-    btn.textContent = "Restart Service";
+  } catch (_) {
+    // The server kills the connection when it restarts — a fetch error here
+    // is normal and expected. Fall through to polling below.
   }
+
+  // Poll until the backend is back up (up to 30 s)
+  btn.textContent = "Waiting for restart…";
+  for (let i = 0; i < 30; i++) {
+    await new Promise(r => setTimeout(r, 1000));
+    try {
+      const res = await fetch("/admin/api/status");
+      if (res.ok) {
+        toast("Service restarted successfully.", "success");
+        await loadStatus();
+        btn.disabled = false;
+        btn.textContent = "Restart Service";
+        return;
+      }
+    } catch (_) { /* still coming back up */ }
+  }
+
+  toast("Restart timed out — check the Pi manually.", "error");
+  btn.disabled = false;
+  btn.textContent = "Restart Service";
 }
 
 async function rebootSystem() {
