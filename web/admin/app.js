@@ -108,7 +108,6 @@ async function loadStatus() {
       `<div>IP: <strong>${data.ip || "unknown"}</strong></div>`;
 
     const ip = data.ip || location.hostname;
-    document.getElementById("kiosk-link").href = `http://${ip}:8080`;
 
   } catch (err) {
     toast("Could not load status: " + err.message, "error");
@@ -458,7 +457,7 @@ async function loadSystemInfo() {
     const data = await api("GET", "/admin/api/status");
     const ip   = data.ip || location.hostname;
     document.getElementById("admin-url").textContent = `http://${ip}:8081/admin`;
-    document.getElementById("kiosk-url").textContent = `http://${ip}:8080`;
+    // kiosk display is localhost-only; no URL to show
   } catch (_) {}
 }
 
