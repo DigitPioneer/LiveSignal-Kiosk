@@ -215,15 +215,16 @@ class AdminHandler(BaseHTTPRequestHandler):
 
     def _wifi_status(self) -> dict:
         try:
+            # Query device wifi to get the actual SSID, not the connection profile name
             r = subprocess.run(
-                ["nmcli", "-t", "-f", "NAME,DEVICE,TYPE,STATE", "connection", "show", "--active"],
+                ["nmcli", "-t", "-f", "ACTIVE,SSID,DEVICE", "device", "wifi"],
                 capture_output=True, text=True, timeout=10,
             )
-            wifi = [
-                {"name": p[0], "device": p[1], "state": p[3]}
-                for line in r.stdout.strip().splitlines()
-                if (p := line.split(":")) and len(p) >= 4 and p[2] == "802-11-wireless"
-            ]
+            wifi = []
+            for line in r.stdout.strip().splitlines():
+                p = line.split(":")
+                if len(p) >= 3 and p[0] == "yes" and p[1].strip():
+                    wifi.append({"name": p[1], "device": p[2], "state": "connected"})
             return {"connected": bool(wifi), "connections": wifi, "ip": self._local_ip()}
         except FileNotFoundError:
             return {"connected": False, "error": "nmcli not found — is NetworkManager installed?"}
