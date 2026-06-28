@@ -1,0 +1,20 @@
+# =============================================================================
+# LiveSignal Kiosk — XDG autostart desktop entry template
+#
+# Used on Ubuntu/GNOME, XFCE, KDE, etc.
+# install.sh (via setup-autostart.sh) writes this to ~/.config/autostart/
+# with PROJECT_DIR filled in automatically.
+#
+# To install manually:
+#   mkdir -p ~/.config/autostart
+#   cp autostart/livesignal-kiosk.desktop.template ~/.config/autostart/livesignal-kiosk.desktop
+#   nano ~/.config/autostart/livesignal-kiosk.desktop  # set Exec path
+# =============================================================================
+
+[Desktop Entry]
+Type=Application
+Name=LiveSignal Kiosk
+Exec=bash PROJECT_DIR/scripts/launch-kiosk.sh
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true

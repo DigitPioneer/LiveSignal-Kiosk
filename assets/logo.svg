@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Outer ring -->
+  <circle cx="100" cy="100" r="94" fill="none" stroke="#4a90d9" stroke-width="3" opacity="0.5"/>
+  <!-- Cross vertical bar -->
+  <rect x="88" y="24" width="24" height="110" rx="5" fill="#4a90d9"/>
+  <!-- Cross horizontal bar -->
+  <rect x="44" y="64" width="112" height="24" rx="5" fill="#4a90d9"/>
+</svg>

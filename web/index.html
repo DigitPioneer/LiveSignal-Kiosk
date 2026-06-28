@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LiveSignal Kiosk</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+  <!-- ── Live Stream View ──────────────────────────────────────────────── -->
+  <div id="live-view" class="hidden">
+    <iframe
+      id="live-iframe"
+      src=""
+      frameborder="0"
+      allow="autoplay; encrypted-media; fullscreen"
+      allowfullscreen
+    ></iframe>
+  </div>
+
+  <!-- ── Waiting / Announcement View ──────────────────────────────────── -->
+  <div id="waiting-view">
+
+    <header class="kiosk-header">
+      <img
+        id="logo"
+        src="/assets/logo.svg"
+        alt="Church Logo"
+        onerror="this.style.display='none'"
+      >
+      <h1 id="church-name">Your Church</h1>
+    </header>
+
+    <div id="clock-block">
+      <div id="clock-time">12:00 PM</div>
+      <div id="clock-date">Sunday, January 1</div>
+    </div>
+
+    <main class="slide-area">
+      <div id="slide-card">
+        <h2 id="slide-title">Welcome!</h2>
+        <p id="slide-body"></p>
+      </div>
+    </main>
+
+    <footer class="kiosk-footer">
+      <div id="slide-dots"></div>
+    </footer>
+
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

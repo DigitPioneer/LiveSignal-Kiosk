@@ -1,0 +1,35 @@
+# =============================================================================
+# LiveSignal Kiosk - Announcement Slides
+#
+# Add, remove, or edit slides here. Each slide needs a "title" and "body".
+# Use \n in body text to create line breaks (or just use multiple lines
+# under the "body:" key with a pipe character as shown below).
+#
+# Slides rotate automatically on the waiting screen.
+# =============================================================================
+
+slides:
+  - title: "Welcome!"
+    body: |
+      We're so glad you're here.
+      Join us after service for fellowship.
+
+  - title: "Sunday Service"
+    body: |
+      Every Sunday at 10:00 AM
+      All are welcome.
+
+  - title: "Youth Group"
+    body: |
+      Fridays at 7:00 PM
+      Fellowship Hall
+
+  - title: "Wednesday Prayer"
+    body: |
+      Prayer & Bible Study
+      Wednesdays at 6:30 PM
+
+  - title: "Connect With Us"
+    body: |
+      Visit our website for updates
+      and upcoming events.

@@ -1,0 +1,34 @@
+# =============================================================================
+# LiveSignal Kiosk — systemd service template
+#
+# install.sh writes the real service to /etc/systemd/system/livesignal.service
+# with PROJECT_DIR and USER filled in automatically.
+#
+# To install manually, copy this file and replace the placeholders:
+#   PROJECT_DIR → absolute path to this repo, e.g. /home/pi/LiveSignal-Kiosk
+#   RUN_USER    → the Linux username that runs the kiosk, e.g. pi
+#
+#   sudo cp autostart/livesignal.service.template /etc/systemd/system/livesignal.service
+#   sudo nano /etc/systemd/system/livesignal.service   # fill in values
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now livesignal
+# =============================================================================
+
+[Unit]
+Description=LiveSignal Kiosk Backend
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=RUN_USER
+WorkingDirectory=PROJECT_DIR
+ExecStart=/usr/bin/python3 main.py
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=livesignal
+
+[Install]
+WantedBy=multi-user.target

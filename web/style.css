@@ -1,0 +1,168 @@
+/* ============================================================
+   LiveSignal Kiosk — TV-optimised stylesheet
+   All sizes are relative to viewport so it scales to any TV.
+   Edit config.yaml to change colors — they are injected via
+   CSS variables by app.js at startup.
+   ============================================================ */
+
+:root {
+  --bg:      #0d1117;
+  --accent:  #4a90d9;
+  --text:    #ffffff;
+  --card-bg: rgba(255, 255, 255, 0.07);
+  --card-border: rgba(255, 255, 255, 0.12);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  /* Readable serif font — all systems have Georgia */
+  font-family: Georgia, 'Times New Roman', serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Utility ─────────────────────────────────────────────── */
+.hidden { display: none !important; }
+
+/* ── Live Stream View ────────────────────────────────────── */
+#live-view {
+  width: 100vw;
+  height: 100vh;
+  background: #000;
+}
+
+#live-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+/* ── Waiting View ────────────────────────────────────────── */
+#waiting-view {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  /* TV safe-area inset: keeps content away from overscan edges */
+  padding: 4vh 6vw 3vh;
+  background: linear-gradient(160deg, var(--bg) 0%, #1a2038 100%);
+}
+
+/* ── Header ──────────────────────────────────────────────── */
+.kiosk-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+#logo {
+  height: 9vh;
+  max-width: 22vw;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
+}
+
+#church-name {
+  font-size: clamp(1.4rem, 2.4vw, 2.4rem);
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  text-align: center;
+  text-transform: uppercase;
+}
+
+/* ── Clock ───────────────────────────────────────────────── */
+#clock-block {
+  text-align: center;
+  line-height: 1.1;
+}
+
+#clock-time {
+  font-size: clamp(3rem, 7vw, 7rem);
+  font-weight: 200;
+  letter-spacing: 0.04em;
+}
+
+#clock-date {
+  font-size: clamp(1rem, 1.8vw, 1.8rem);
+  opacity: 0.65;
+  margin-top: 0.3rem;
+  font-weight: 300;
+}
+
+/* ── Slide Area ──────────────────────────────────────────── */
+.slide-area {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: min(900px, 80vw);
+}
+
+#slide-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 1.2rem;
+  padding: clamp(1.5rem, 3vw, 3.5rem) clamp(2rem, 5vw, 5rem);
+  text-align: center;
+  width: 100%;
+  /* fade transition between slides */
+  transition: opacity 0.4s ease;
+}
+
+#slide-card.fade-out {
+  opacity: 0;
+}
+
+#slide-title {
+  font-size: clamp(1.8rem, 3.2vw, 3.2rem);
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+#slide-body {
+  font-size: clamp(1.2rem, 2.2vw, 2.2rem);
+  font-weight: 300;
+  line-height: 1.7;
+  opacity: 0.9;
+  white-space: pre-line;
+}
+
+/* ── Footer / Dots ───────────────────────────────────────── */
+.kiosk-footer {
+  padding-bottom: 0.5vh;
+}
+
+#slide-dots {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: center;
+}
+
+.dot {
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  transition: background 0.35s;
+}
+
+.dot.active {
+  background: var(--accent);
+}

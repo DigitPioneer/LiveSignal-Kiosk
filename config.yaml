@@ -1,0 +1,36 @@
+# =============================================================================
+# LiveSignal Kiosk - Main Configuration
+# Edit this file to configure your kiosk. No code changes required.
+# =============================================================================
+
+# YouTube channel live URL
+# The URL YouTube uses for a channel's current live stream.
+# Format: https://www.youtube.com/@YourHandle/live
+channel:
+  live_url: "https://www.youtube.com/@YourChurch/live"
+
+  # How often to check whether the channel is live (seconds).
+  # Lower = faster to detect stream start/end, but more bandwidth.
+  check_interval_seconds: 60
+
+# ── Display settings ─────────────────────────────────────────────────────────
+display:
+  church_name: "Your Church Name"
+
+  # Show a clock on the waiting screen?
+  show_clock: true
+
+  # How long each announcement slide is shown (seconds)
+  slide_duration_seconds: 8
+
+  # Color theme (CSS hex values)
+  background_color: "#0d1117"
+  accent_color: "#4a90d9"
+  text_color: "#ffffff"
+
+# ── Local web server ─────────────────────────────────────────────────────────
+# Chromium always points to http://localhost:PORT
+# Usually no need to change these.
+server:
+  host: "127.0.0.1"
+  port: 8080
