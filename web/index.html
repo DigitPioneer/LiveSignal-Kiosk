@@ -51,28 +51,87 @@
 
   </div>
 
-  <!-- ── First-Boot Setup View ─────────────────────────────────────────── -->
+  <!-- ── First-Boot Setup Wizard ──────────────────────────────────────── -->
   <div id="setup-view" class="hidden">
-    <div class="setup-card">
-      <div class="setup-icon">&#x1F4F6;</div>
-      <h1 class="setup-heading">WiFi Setup Required</h1>
-      <p class="setup-sub">Connect your phone or tablet to this WiFi network:</p>
+    <div class="wizard">
 
-      <div class="setup-cred-block">
-        <div class="setup-cred-row">
-          <span class="setup-label">Network</span>
-          <span class="setup-value" id="setup-ssid">LiveSignal-Setup</span>
+      <!-- Step bar -->
+      <div class="wizard-steps">
+        <div class="wstep active" id="wstep-ind-1"><span class="wstep-num">1</span> WiFi</div>
+        <div class="wstep-line"></div>
+        <div class="wstep" id="wstep-ind-2"><span class="wstep-num">2</span> Settings</div>
+        <div class="wstep-line"></div>
+        <div class="wstep" id="wstep-ind-3"><span class="wstep-num">3</span> Done</div>
+      </div>
+
+      <!-- ── Step 1: WiFi ──────────────────────────────────────────── -->
+      <div id="wstep-1" class="wizard-panel">
+        <h1 class="wizard-title">Connect to WiFi</h1>
+        <p class="wizard-desc">Select your network, then enter the password.</p>
+
+        <div id="wizard-net-list" class="wizard-net-list">
+          <p class="wizard-scanning">Scanning for networks&#x2026;</p>
         </div>
-        <div class="setup-cred-row">
-          <span class="setup-label">Password</span>
-          <span class="setup-value" id="setup-password">livesignal</span>
+
+        <div id="wizard-pass-form" class="hidden">
+          <div class="wizard-selected-net">
+            <span class="wizard-net-icon">&#x1F4F6;</span>
+            <span id="wizard-selected-ssid" class="wizard-selected-label"></span>
+            <button type="button" class="wizard-change-btn" id="wizard-change-net">Change</button>
+          </div>
+          <div class="wizard-field">
+            <label for="wizard-wifi-pass">WiFi Password</label>
+            <div class="wizard-pass-row">
+              <input type="password" id="wizard-wifi-pass" placeholder="Enter password" autocomplete="off">
+              <button type="button" class="wizard-show-pass" id="wizard-show-pass-btn">Show</button>
+            </div>
+          </div>
+          <div id="wizard-wifi-error" class="wizard-error hidden"></div>
+          <button type="button" class="wizard-btn wizard-btn-primary" id="wizard-connect-btn">Connect</button>
+        </div>
+
+        <div class="wizard-scan-row" id="wizard-scan-row">
+          <button type="button" class="wizard-btn wizard-btn-secondary" id="wizard-scan-btn">
+            &#x21BB; Scan Again
+          </button>
         </div>
       </div>
 
-      <p class="setup-sub">Then open this address in your browser:</p>
-      <div class="setup-url" id="setup-url">http://10.42.0.1:8081/admin</div>
+      <!-- ── Step 2: Settings ──────────────────────────────────────── -->
+      <div id="wstep-2" class="wizard-panel hidden">
+        <h1 class="wizard-title">Kiosk Settings</h1>
+        <p class="wizard-desc">Configure your church information. All fields are optional — you can change them later in the admin panel.</p>
 
-      <p class="setup-hint">Once WiFi is configured this screen will disappear automatically.</p>
+        <div class="wizard-field">
+          <label for="wizard-church-name">Church Name</label>
+          <input type="text" id="wizard-church-name" placeholder="Grace Community Church" autocomplete="off">
+        </div>
+        <div class="wizard-field">
+          <label for="wizard-yt-url">YouTube Channel URL</label>
+          <input type="url" id="wizard-yt-url" placeholder="https://www.youtube.com/@YourChurch/live" autocomplete="off">
+          <span class="wizard-hint">The /live URL for your church YouTube channel</span>
+        </div>
+        <div class="wizard-field">
+          <label for="wizard-pin">Admin PIN</label>
+          <input type="text" id="wizard-pin" placeholder="Choose a PIN to protect the admin panel" maxlength="20" autocomplete="new-password">
+        </div>
+
+        <div id="wizard-config-error" class="wizard-error hidden"></div>
+        <button type="button" class="wizard-btn wizard-btn-primary" id="wizard-settings-save">
+          Finish Setup &#x2192;
+        </button>
+      </div>
+
+      <!-- ── Step 3: Done ──────────────────────────────────────────── -->
+      <div id="wstep-3" class="wizard-panel hidden">
+        <div class="wizard-done-icon">&#x2713;</div>
+        <h1 class="wizard-title">Setup Complete!</h1>
+        <p class="wizard-desc">LiveSignal Kiosk is starting up&#x2026;</p>
+        <p class="wizard-admin-note">
+          Admin panel: <strong id="wizard-admin-url"></strong>
+        </p>
+      </div>
+
     </div>
   </div>
 

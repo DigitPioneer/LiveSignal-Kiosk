@@ -59,24 +59,23 @@ def main():
         target=admin.run, args=(config,), daemon=True, name="admin-server"
     ).start()
 
-    # ── Network check: start setup hotspot if no WiFi ─────────────────────────
+    # ── Network check: show setup wizard on TV if no WiFi ────────────────────
     # Give the system a moment to finish bringing up any existing connection
     if not network.wait_for_connection(timeout=15):
-        setup_cfg = config.get("setup", {})
+        logger.info("No network — entering setup mode (on-screen wizard)")
+        # Show the wizard immediately so the installer can use keyboard/mouse
+        state.set_setup("", "", "")
+
+        # Also start a hotspot as a fallback for phone-based config
+        setup_cfg    = config.get("setup", {})
         hotspot_ssid = setup_cfg.get("hotspot_ssid", "LiveSignal-Setup")
         hotspot_pass = setup_cfg.get("hotspot_password", "livesignal")
-
-        logger.info("No network — starting setup hotspot '%s'", hotspot_ssid)
-        hotspot_ip = network.start_hotspot(hotspot_ssid, hotspot_pass)
-
+        hotspot_ip   = network.start_hotspot(hotspot_ssid, hotspot_pass)
         if hotspot_ip:
-            state.set_setup(hotspot_ssid, hotspot_pass, hotspot_ip)
             logger.info(
-                "Setup mode active. Connect to '%s' then open http://%s:8081/admin",
+                "Hotspot fallback active: '%s' → http://%s:8081/admin",
                 hotspot_ssid, hotspot_ip,
             )
-        else:
-            logger.warning("Hotspot failed — continuing without setup mode")
     else:
         logger.info("Network connected — starting in normal mode")
 

@@ -8,13 +8,14 @@ import json
 import logging
 import mimetypes
 import os
+import subprocess
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from typing import Optional
 from urllib.parse import urlparse
 
 import yaml
 
-from kiosk import state
+from kiosk import network, state
 
 logger = logging.getLogger(__name__)
 
@@ -54,7 +55,6 @@ class KioskHandler(BaseHTTPRequestHandler):
 
         elif path == "/api/config":
             d = _config.get("display", {})
-            s = _config.get("server", {})
             self._json({
                 "church_name": d.get("church_name", "Your Church"),
                 "show_clock": d.get("show_clock", True),
@@ -63,6 +63,16 @@ class KioskHandler(BaseHTTPRequestHandler):
                 "accent_color": d.get("accent_color", "#4a90d9"),
                 "text_color": d.get("text_color", "#ffffff"),
             })
+
+        elif path == "/setup/wifi/scan":
+            subprocess.run(
+                ["sudo", "nmcli", "device", "wifi", "rescan"],
+                capture_output=True, timeout=12,
+            )
+            self._json(self._scan_wifi())
+
+        elif path == "/setup/wifi/status":
+            self._json({"connected": network.has_active_connection()})
 
         elif path in ("/", "/index.html"):
             self._file(os.path.join("web", "index.html"))
@@ -74,6 +84,103 @@ class KioskHandler(BaseHTTPRequestHandler):
             # Everything else: look in the web/ directory
             # e.g. /style.css → web/style.css
             self._file(os.path.join("web", path.lstrip("/")))
+
+    def do_POST(self):
+        path = urlparse(self.path).path
+        length = int(self.headers.get("Content-Length", 0))
+        raw = self.rfile.read(length) if length else b""
+        try:
+            data = json.loads(raw) if raw else {}
+        except json.JSONDecodeError:
+            self._json({"ok": False, "message": "Invalid JSON"})
+            return
+
+        if path == "/setup/wifi/connect":
+            ssid = data.get("ssid", "").strip()
+            password = data.get("password", "")
+            self._json(self._connect_wifi(ssid, password))
+
+        elif path == "/setup/config":
+            self._json(self._save_setup_config(data))
+
+        else:
+            self.send_error(404)
+
+    def _scan_wifi(self) -> list:
+        try:
+            r = subprocess.run(
+                ["nmcli", "--terse", "--escape", "yes",
+                 "--fields", "SSID,SIGNAL,SECURITY,IN-USE",
+                 "device", "wifi", "list"],
+                capture_output=True, text=True, timeout=15,
+            )
+            seen: set = set()
+            networks = []
+            for line in r.stdout.strip().splitlines():
+                # Split from right so SSIDs containing colons are kept intact
+                # Line format: SSID:SIGNAL:SECURITY:IN-USE
+                p = line.rsplit(":", 3)
+                if len(p) < 4:
+                    continue
+                ssid = p[0].replace("\\:", ":").strip()
+                if not ssid or ssid in seen:
+                    continue
+                seen.add(ssid)
+                try:
+                    signal = int(p[1])
+                except ValueError:
+                    signal = 0
+                security = p[2].strip()
+                in_use = p[3].strip() == "*"
+                networks.append({
+                    "ssid": ssid,
+                    "signal": signal,
+                    "security": security or "Open",
+                    "in_use": in_use,
+                })
+            networks.sort(key=lambda n: (-int(n["in_use"]), -n["signal"]))
+            return networks
+        except Exception as exc:
+            logger.error("WiFi scan failed: %s", exc)
+            return []
+
+    def _connect_wifi(self, ssid: str, password: str) -> dict:
+        try:
+            cmd = ["sudo", "nmcli", "device", "wifi", "connect", ssid]
+            if password:
+                cmd += ["password", password]
+            r = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+            if r.returncode == 0:
+                network.stop_hotspot()
+                state.set_waiting()
+                return {"ok": True}
+            msg = (r.stderr.strip() or r.stdout.strip() or "Connection failed").split("\n")[0]
+            return {"ok": False, "message": msg}
+        except subprocess.TimeoutExpired:
+            return {"ok": False, "message": "Connection timed out — wrong password?"}
+        except Exception as exc:
+            return {"ok": False, "message": str(exc)}
+
+    def _save_setup_config(self, data: dict) -> dict:
+        global _config
+        try:
+            config_path = os.path.join(_project_root(), "config.yaml")
+            with open(config_path, "r", encoding="utf-8") as f:
+                cfg = yaml.safe_load(f) or {}
+            if data.get("church_name"):
+                cfg.setdefault("display", {})["church_name"] = data["church_name"].strip()
+            if data.get("live_url"):
+                cfg.setdefault("channel", {})["live_url"] = data["live_url"].strip()
+            if data.get("admin_pin"):
+                cfg.setdefault("admin", {})["pin"] = data["admin_pin"].strip()
+            with open(config_path, "w", encoding="utf-8") as f:
+                yaml.dump(cfg, f, default_flow_style=False, allow_unicode=True, sort_keys=False)
+            _config = cfg
+            state.set_waiting()
+            return {"ok": True}
+        except Exception as exc:
+            logger.error("Config save failed: %s", exc)
+            return {"ok": False, "message": str(exc)}
 
     def _json(self, data):
         body = json.dumps(data).encode()
