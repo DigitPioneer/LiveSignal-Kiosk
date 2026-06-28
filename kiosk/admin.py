@@ -109,6 +109,9 @@ class AdminHandler(BaseHTTPRequestHandler):
         if path.startswith("/admin/static/"):
             self._file("web/admin/" + path[len("/admin/static/"):])
             return
+        if path.startswith("/assets/"):
+            self._file(path.lstrip("/"))
+            return
 
         # All API routes require auth
         if not self._require_auth():

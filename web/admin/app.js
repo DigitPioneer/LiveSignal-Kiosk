@@ -343,6 +343,12 @@ async function handleImageUpload(file) {
   const reader = new FileReader();
   reader.onload = async (e) => {
     const b64 = e.target.result; // data:image/jpeg;base64,...
+
+    // Show preview immediately using the local base64 data — no server needed
+    const previewImg = document.getElementById("preview-img");
+    previewImg.src = b64;
+    document.getElementById("slide-image-preview").classList.remove("hidden");
+
     try {
       const result = await api("POST", "/admin/api/assets/upload", {
         filename: file.name,
@@ -350,9 +356,6 @@ async function handleImageUpload(file) {
       });
       if (result.ok) {
         document.getElementById("slide-image-input").value = result.path;
-        const img = document.getElementById("preview-img");
-        img.src = "/" + result.path;
-        document.getElementById("slide-image-preview").classList.remove("hidden");
         toast("Image uploaded.", "success");
       } else {
         toast("Upload failed: " + (result.error || "unknown"), "error");
