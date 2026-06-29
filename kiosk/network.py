@@ -36,6 +36,21 @@ def has_active_connection(retries: int = 1) -> bool:
     return False
 
 
+def has_saved_wifi_profiles() -> bool:
+    """Return True if NetworkManager has any saved WiFi connection profiles."""
+    try:
+        r = subprocess.run(
+            ["nmcli", "-t", "-f", "TYPE", "connection", "show"],
+            capture_output=True, text=True, timeout=5,
+        )
+        return any(
+            line.strip() == "802-11-wireless"
+            for line in r.stdout.strip().splitlines()
+        )
+    except Exception:
+        return False
+
+
 def wait_for_connection(timeout: int = 15) -> bool:
     """Wait up to *timeout* seconds for a network connection to appear."""
     logger.info("Waiting up to %d s for network connection...", timeout)

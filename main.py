@@ -60,22 +60,30 @@ def main():
     ).start()
 
     # ── Network check: show setup wizard on TV if no WiFi ────────────────────
-    # Give the system a moment to finish bringing up any existing connection
-    if not network.wait_for_connection(timeout=15):
+    # Use a long timeout so saved WiFi profiles have time to reconnect after
+    # boot before we assume there's no network and start a hotspot.
+    has_saved_wifi = network.has_saved_wifi_profiles()
+    wait_secs = 60 if has_saved_wifi else 10
+
+    if not network.wait_for_connection(timeout=wait_secs):
         logger.info("No network — entering setup mode (on-screen wizard)")
-        # Show the wizard immediately so the installer can use keyboard/mouse
         state.set_setup("", "", "")
 
-        # Also start a hotspot as a fallback for phone-based config
-        setup_cfg    = config.get("setup", {})
-        hotspot_ssid = setup_cfg.get("hotspot_ssid", "LiveSignal-Setup")
-        hotspot_pass = setup_cfg.get("hotspot_password", "livesignal")
-        hotspot_ip   = network.start_hotspot(hotspot_ssid, hotspot_pass)
-        if hotspot_ip:
-            logger.info(
-                "Hotspot fallback active: '%s' → http://%s:8081/admin",
-                hotspot_ssid, hotspot_ip,
-            )
+        # Only start the hotspot if there are no saved WiFi profiles.
+        # If profiles exist the device probably just needs more time;
+        # starting a hotspot would kick it off the network permanently.
+        if not has_saved_wifi:
+            setup_cfg    = config.get("setup", {})
+            hotspot_ssid = setup_cfg.get("hotspot_ssid", "LiveSignal-Setup")
+            hotspot_pass = setup_cfg.get("hotspot_password", "livesignal")
+            hotspot_ip   = network.start_hotspot(hotspot_ssid, hotspot_pass)
+            if hotspot_ip:
+                logger.info(
+                    "Hotspot active: '%s' → http://%s:8081/admin",
+                    hotspot_ssid, hotspot_ip,
+                )
+        else:
+            logger.warning("Saved WiFi profiles exist but no connection — will retry via watcher")
     else:
         logger.info("Network connected — starting in normal mode")
 
